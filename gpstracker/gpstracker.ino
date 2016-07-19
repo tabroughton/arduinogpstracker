@@ -141,21 +141,23 @@ void loop()
   
       if(lcdbuttonstate == HIGH){
         lcdon = !lcdon;
+
+        if(lcdon){
+          turnOnLCD();
+        }else{
+            turnOffLCD();
+          }
       }
     }
   }
+
 
   // This sketch displays information every time a new sentence is correctly encoded.
   while (ss.available() > 0)
     if (gps.encode(ss.read())){
       if(millis() - lastdisplaytime > updatedelay){
         if(gps.location.isValid()){
-          if(lcdon){
-            turnOnLCD();
-            displayLCDInfo();
-          }else{
-            turnOffLCD();
-          }
+          if(lcdon) displayLCDInfo();
           saveToSD();
         }else{
           displayLCDError("Getting Loc...");
