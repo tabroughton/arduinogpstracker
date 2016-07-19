@@ -66,6 +66,15 @@ int waypointcounter = 0;
 
 const byte waypointbutton = 2;
 
+//settings for turning LCD Off/On
+boolean lcdon = true;
+int lcdbuttonstate = LOW;
+int debouncetime = 0;
+int debouncelength = 50;
+int lcdbutton = 7;
+
+
+
 void setup()
 {
   Serial.begin(115200);
@@ -111,17 +120,42 @@ void setup()
   
   pinMode(waypointbutton, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(waypointbutton), setWaypoint, CHANGE);
+
+  
+  pinMode(lcdbutton, INPUT);
 }
 
 void loop()
 {
+
+  //check to see if lcd should be turned off
+  
+  int lcdbuttonreading = digitalRead(lcdbutton);
+  if(lcdbuttonreading != lcdbuttonstate){
+    debouncetime = millis();
+  }
+  
+  if((millis() - debouncetime) > debouncelength){
+    if(lcdbuttonreading != lcdbuttonstate){
+      lcdbuttonstate = lcdbuttonreading;
+  
+      if(lcdbuttonstate == HIGH){
+        lcdon = !lcdon;
+      }
+    }
+  }
 
   // This sketch displays information every time a new sentence is correctly encoded.
   while (ss.available() > 0)
     if (gps.encode(ss.read())){
       if(millis() - lastdisplaytime > updatedelay){
         if(gps.location.isValid()){
-          displayLCDInfo();
+          if(lcdon){
+            turnOnLCD();
+            displayLCDInfo();
+          }else{
+            turnOffLCD();
+          }
           saveToSD();
         }else{
           displayLCDError("Getting Loc...");
@@ -146,6 +180,17 @@ void loop()
     pointtype = 'T';
     
   }
+}
+
+void turnOnLCD(){
+  lcd.display();
+  lcd.setRGB(0, 0, 255);
+}
+
+
+void turnOffLCD(){
+  lcd.noDisplay();
+  lcd.setRGB(0, 0, 0);
 }
 
 
