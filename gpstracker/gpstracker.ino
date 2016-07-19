@@ -66,6 +66,7 @@ int waypointcounter = 0;
 
 const byte waypointbutton = 2;
 
+
 //settings for turning LCD Off/On
 boolean lcdon = true;
 int lcdbuttonstate = LOW;
@@ -157,7 +158,8 @@ void loop()
     if (gps.encode(ss.read())){
       if(millis() - lastdisplaytime > updatedelay){
         if(gps.location.isValid()){
-          if(lcdon) displayLCDInfo();
+          //if(lcdon) 
+            displayLCDInfo();
           saveToSD();
         }else{
           displayLCDError("Getting Loc...");
