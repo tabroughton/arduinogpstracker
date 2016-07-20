@@ -25,6 +25,7 @@ rgb_lcd lcd;
 #include <SPI.h>
 #include <SD.h>
 
+
 // On the Ethernet Shield, CS is pin 4. Note that even if it's not
 // used as the CS pin, the hardware CS pin (10 on most Arduino boards,
 // 53 on the Mega) must be left as an output or the SD library
@@ -78,7 +79,6 @@ int lcdbutton = 7;
 
 void setup()
 {
-  Serial.begin(115200);
   ss.begin(GPSBaud);
 
    // set up the LCD's number of columns and rows:
@@ -88,7 +88,7 @@ void setup()
   lcd.setCursor(0, 0);
 
   
-  lcd.print("Init SD card...");
+  lcd.print(F("Init SD card..."));
   // make sure that the default chip select pin is set to
   // output, even if you don't use it:
   delay(1000);
@@ -97,24 +97,24 @@ void setup()
   pinMode(10, OUTPUT);
   // see if the card is present and can be initialized:
   if (!SD.begin(chipSelect)) {
-    displayLCDError("Card failed");
+    displayLCDError(F("Card failed"));
     // don't do anything more:
     while (1) ;
   }
   lcd.clear();
-  lcd.print("card initialised");
+  lcd.print(F("card initialised"));
   delay(1000);
 
   // Open up the file we're going to log to!
  
   dataFile = SD.open("datalog.txt", FILE_WRITE);
   if (!dataFile) {
-    displayLCDError("err opening file");
+    displayLCDError(F("err opening file"));
     // Wait forever since we cant write data
     while (1) ;
   }else{
-    dataFile.println("-------------");
-    dataFile.println("type, latitude, longitude, alt, speed, course, date, time, satellite, name, description");
+    dataFile.println(F("-------------"));
+    dataFile.println(F("type, latitude, longitude, alt, speed, course, date, time, satellite, name, description"));
   }
  
   //make sure we interrupt on button press
@@ -162,7 +162,7 @@ void loop()
             displayLCDInfo();
           saveToSD();
         }else{
-          displayLCDError("Getting Loc...");
+          displayLCDError(F("Getting Loc..."));
         }
         lastdisplaytime = millis();
       }
@@ -177,9 +177,9 @@ void loop()
   if(pointtype == 'W'){
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("waypoint ");
+    lcd.print(F("waypoint "));
     lcd.print(waypointcounter);
-    lcd.print(" set");
+    lcd.print(F(" set"));
     
     pointtype = 'T';
     
@@ -352,14 +352,14 @@ void saveToSD(){
     }
     else
     {
-      dataFile.print("");
+      dataFile.print(F(""));
     }
     
     //description (waypoint)
     dataFile.print(F(",")); 
     if (pointtype == 'W')
     {
-      dataFile.print("<<AddDescription>>");
+      dataFile.print(F("<<AddDescription>>"));
     }
     else
     {
