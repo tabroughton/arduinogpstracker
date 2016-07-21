@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 /*
  * 
  * GPS Tracker for Arduino, first Adventure Labs project
@@ -158,7 +160,7 @@ void loop()
     if (gps.encode(ss.read())){
       if(millis() - lastdisplaytime > updatedelay){
         if(gps.location.isValid()){
-          //if(lcdon) 
+          if(lcdon) 
             displayLCDInfo();
           saveToSD();
         }else{
