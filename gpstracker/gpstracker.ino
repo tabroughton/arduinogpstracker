@@ -27,6 +27,10 @@ rgb_lcd lcd;
 #include <SPI.h>
 #include <SD.h>
 
+#include "DHT.h"
+#define DHTPIN A0
+#define DHTTYPE DHT11 // DHT 11
+DHT dht(DHTPIN, DHTTYPE);
 
 // On the Ethernet Shield, CS is pin 4. Note that even if it's not
 // used as the CS pin, the hardware CS pin (10 on most Arduino boards,
@@ -116,7 +120,7 @@ void setup()
     while (1) ;
   }else{
     dataFile.println(F("-------------"));
-    dataFile.println(F("type, latitude, longitude, alt, speed, course, date, time, satellite, name, description"));
+    dataFile.println(F("type, latitude, longitude, alt, speed, course, date, time, satellite, humidity, temperature, name, description"));
   }
  
   //make sure we interrupt on button press
@@ -126,6 +130,8 @@ void setup()
 
   
   pinMode(lcdbutton, INPUT);
+
+  dht.begin();
 }
 
 void loop()
@@ -343,6 +349,23 @@ void saveToSD(){
     else
     {
       dataFile.print(F("INVALID"));
+    }
+
+    //add temperature data
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+    dataFile.print(F(",")); 
+     // check if returns are valid, if they are NaN (not a number) then something went wrong!
+    if (isnan(t) || isnan(h))
+    {
+        dataFile.print("INVALID, INVALID");
+    }
+    else
+    {
+        dataFile.print(h);
+        dataFile.print(", ");
+        dataFile.print(t);
+        dataFile.print(" *C");
     }
     
     //name (waypoint)
